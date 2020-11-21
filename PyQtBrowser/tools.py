@@ -1,4 +1,5 @@
 import dataclasses
+import logging
 import sys
 import typing
 import re
@@ -69,6 +70,9 @@ class HtmlRequestsManager:
 
 
 
+
+
+
 # A object to hold info abt the page
 # eg, icons ,title ,desc
 @dataclasses.dataclass
@@ -76,6 +80,13 @@ class HtmlInfo:
     src_url: str
     favicon: QIcon
     title: str
+
+
+
+
+
+
+
 
 
 def htmlinfo_maker(url):
@@ -100,6 +111,9 @@ def htmlinfo_maker(url):
 
 
 
+
+
+
 class WebpageHandler:
     """
     Handles opening of tabs and sites
@@ -115,8 +129,13 @@ class WebpageHandler:
         self.tab = None
 
         self.info: HtmlInfo = None
+        self.log: logging.Logger=None
         # URL to search when text is not url
         self.default_searchaddr="https://www.google.com/search?q="
+
+
+
+
 
     def validate_url(self,str):
         # Regex to check valid URL
@@ -164,52 +183,71 @@ class WebpageHandler:
             f = self._page_future.pop(-1)
             self.load_webpage(f)
         except IndexError:
-            print("No future pages!")
+            self.log.error("No future pages!")
 
     def invalidate_futurepages(self, url):
+        self.log.info(f"Checking if futurepages are invalid (Current: {self._page_future})")
         if len(self._page_future) != 0:
             if url != self._page_future[-1]:
+                self.log.info("Invalidating futurepages ...")
                 self._page_future.clear()
 
+        self.log.info(f"futurepages left: {self._page_future})")
 
     def load_webpage(self,url,_history=True,_supress_load=False):
-        print("[Webpage Handler]Loading Url:",url)
+        self.log.info(f"Loading Url: {url} (Suprressed: {_supress_load})")
         url=self.formaturl(url)
 
         if url != self._current_url:
-            if not _supress_load:self.load_site(self.formaturl(url))
+            if not _supress_load:
+                self.load_site(self.formaturl(url))
+                self.invalidate_futurepages(url)
 
-            (lambda: self._page_history.append(self._current_url) if self._current_url != None and _history else 'g')()
+            if self._current_url != None:
+                self._page_history.append(self._current_url)
 
-            self.invalidate_futurepages(url)
 
             self.info = htmlinfo_maker(url)
 
     def load_lastpage(self):
+        self.log.info("Attempting to load last page...")
         try:
             url = self.get_lastpage()
             curl = self._current_url
-            self.load_webpage(url,_history=False)
+
+
 
 
         except IndexError:
-            print("There is no lastpage!")
+            self.log.error("There is no lastpage!")
 
         else:
+            self.log.ok("Successfully got previous page.. proceeding...")
 
-            self._page_future.append(curl)
+
+
             self.search_barWidget.setText(url)
 
+            self.load_webpage(url, _history=False)
+            self.log.info(f"Appending current url {curl} to _page_future : {str(self._page_future)}")
+            self._page_future.append(curl)
+            self.log.info(f"Future pages: {self._page_future}")
 
     def url_changed(self,qurl:QtCore.QUrl):
         self.load_webpage(qurl.url(),_supress_load=True)
         self.search_barWidget.setText(qurl.url())
+        self._current_url=qurl.url()
         self.search_barWidget.setCursorPosition(0)
-        print(type(self.tab),"F")
+
         self.tab.setTabIcon(self.info.favicon)
         self.tab.setTabText(self.info.title)
 
     def newTab(self,*args):
-        print("[WebpageHandler] opening new tab..")
+        self.log.info("opening new tab..")
 
         self.BrowserHandler.new_tab()
+
+
+    def finished_load(self):
+
+        self.log.ok("Finished loading of url: "+str(self._current_url))
