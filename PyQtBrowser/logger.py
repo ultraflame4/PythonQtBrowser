@@ -1,5 +1,9 @@
 import colorama
 import logging
+import os
+
+if os.name == "nt":
+    colorama.init()
 
 reset = colorama.Fore.RESET + colorama.Fore.WHITE + colorama.Style.BRIGHT
 clrs = colorama.Fore

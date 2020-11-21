@@ -6,7 +6,7 @@ from PyQt5 import QtWebEngine,QtWebEngineWidgets,QtWebEngineCore
 
 app = PyQtBrowser.QtWidgets.QApplication([])
 urlintercept = request_intercepter.WebEngineUrlRequestInterceptor()
-QtWebEngineWidgets.QWebEngineProfile.defaultProfile().setRequestInterceptor(urlintercept)
+QtWebEngineWidgets.QWebEngineProfile.defaultProfile().setUrlRequestInterceptor(urlintercept)
 widget = PyQtBrowser.Browser()
 
 widget.show()
