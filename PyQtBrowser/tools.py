@@ -4,7 +4,6 @@ import mimetypes
 import re
 import threading
 import typing
-import urllib
 from urllib import request, parse
 from urllib.request import urlopen
 
@@ -15,27 +14,31 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import *
 from PyQt5.QtWebEngineWidgets import *
 
+from .logger import logger
+
 
 class DownloadHandler:
     downloadpath = "./downloads"
+    log = logger("DownloadHandler")
 
     class downloadworker:
         def __init__(self, url: QtCore.QUrl, file_type):
             self.origin = url.url()
             self.mimetype = file_type
-            self.file_ext = (lambda: x if (x := mimetypes.guess_extension(self.mimetype)) != None else '')()
+            self.file_ext = (lambda: x if (x := mimetypes.guess_extension(self.mimetype)) is not None else '')()
             self.filename = self.origin.split('/')[-1] + self.file_ext
+            self.log = DownloadHandler.log.getChild("downloadWorker")
 
         def _download_progress(self, blocknum, block_size, size):
             readed_data = blocknum * block_size
             percentage = int(readed_data * 100 / size)
-            print(
-                f"Download Progress: [ {readed_data}/{size} ({percentage}%) | File:{self.filename} | Src : {self.origin}]")
-            pass
+
+            t= f"from {self.origin} [{readed_data}/{size} ({percentage}%)]"
+            self.log.done(f"Downloading... file '{self.filename}' {t}")
 
         def start(self):
-            print(f"Beginning Download of File: '{self.filename}' [Type: {self.mimetype}] from Url: '{self.origin}'")
-            print(f"Into directory {DownloadHandler.downloadpath} []")
+            self.log.info(f"Beginning Download of File: '{self.filename}' [Type: {self.mimetype}] from Url: '{self.origin}'")
+            self.log.info(f"Into directory {DownloadHandler.downloadpath} []")
 
             request.urlretrieve(url=self.origin,
                                 filename=DownloadHandler.downloadpath + '/' + self.filename,
@@ -44,9 +47,8 @@ class DownloadHandler:
 
     @staticmethod
     def _worker(download):
-        w = DownloadHandler.Downloadworker(download.url(), download.mimeType())
+        w = DownloadHandler.downloadworker(download.url(), download.mimeType())
         w.start()
-        print("Download finished")
 
     @staticmethod
     def request_download(download: QWebEngineDownloadItem):
@@ -99,11 +101,12 @@ class WebpageHandler:
         self.tab = None
 
         self.info: HtmlInfo = None
-        self.log: logging.Logger = None
+        self.log: logger = None
         # URL to search when text is not url
         self.default_searchaddr = "https://www.google.com/search?q="
 
-    def validate_url(self, str):
+    @staticmethod
+    def validate_url(str):
         # Regex to check valid URL
         regex = ("(www.)?" +
                  "[a-zA-Z0-9@:%._\\+~#?&//=]" +
@@ -127,7 +130,7 @@ class WebpageHandler:
             return False
 
     def formaturl(self, url):
-        if self.validate_url(url):
+        if WebpageHandler.validate_url(url):
             if not re.match('(?:http|ftp|https)://', url):
                 return 'https://{}'.format(url)
             return url
@@ -151,11 +154,11 @@ class WebpageHandler:
             self.log.error("No future pages!")
 
     def invalidate_futurepages(self, url):
-        self.log.info(f"Checking if futurepages are invalid (Current: {self._page_future})")
+        self.log.done(f"Validating futurepages (Current: {self._page_future})..")
         if len(self._page_future) != 0:
             if url != self._page_future[-1]:
-                self.log.info("Invalidating futurepages ...")
                 self._page_future.clear()
+                self.log.done("Invalidated future_pages")
 
         self.log.info(f"futurepages left: {self._page_future})")
 
@@ -169,7 +172,7 @@ class WebpageHandler:
                 self.invalidate_futurepages(url)
 
             if self._current_url != None and _history:
-                self.log.info(f"Appending {self._current_url} to history")
+                self.log.done(f"Appending {self._current_url} to history")
                 self._page_history.append(self._current_url)
 
             self._current_url = url
@@ -177,7 +180,7 @@ class WebpageHandler:
             self.info = htmlinfo_maker(url)
 
     def load_lastpage(self):
-        self.log.info("Attempting to load last page...")
+        self.log.info("Attempting to load previous page...")
         try:
             url = self.get_lastpage()
             curl = self._current_url
@@ -194,15 +197,15 @@ class WebpageHandler:
             self.search_barWidget.setText(url)
 
             self.load_webpage(url, _history=False)
-            self.log.info(f"Appending current url {curl} to _page_future : {str(self._page_future)}")
+            self.log.done(f"Appending current url {curl} to _page_future : {str(self._page_future)}")
             self._page_future.append(curl)
-            self.log.info(f"Future pages: {self._page_future}")
+            self.log.debug(f"Future pages: {self._page_future}")
 
     def url_changed(self, qurl: QtCore.QUrl):
         self.log.info(f"url change detected : {qurl.url()}")
 
         if self._current_url != qurl.url():
-            self.log.info(f"Change not caused by self, registering change...")
+            self.log.debug(f"Change not caused by self, registering change...")
 
             self.load_webpage(qurl.url(), _supress_load=True)
             self.search_barWidget.setText(qurl.url())
@@ -213,7 +216,7 @@ class WebpageHandler:
         self.tab.setTabText(self.info.title)
 
     def newTab(self, *args):
-        self.log.info("opening new tab..")
+        self.log.info("calling open new tab method..")
 
         self.BrowserHandler.new_tab()
 
