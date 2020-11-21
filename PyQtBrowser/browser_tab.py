@@ -116,7 +116,7 @@ class webpage_display(QWebEngineView):
 
 
     def on_downloadReqeusted(self,download):
-        tools.downloadHandler.request_download(download)
+        tools.DownloadHandler.request_download(download)
 
 
     def load_progress(self,Progress):

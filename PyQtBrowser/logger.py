@@ -1,0 +1,82 @@
+import logging,colorama
+
+
+reset = colorama.Fore.RESET + colorama.Fore.WHITE + colorama.Style.BRIGHT
+clrs = colorama.Fore
+style = colorama.Style
+
+logging.addLevelName(25,"SUCCESS")
+logging.addLevelName(23,"OK")
+
+class logFilter(logging.Filter):
+    def filter(self, record) -> int:
+        record.levelnameCap = record.levelname.upper()
+        return True
+
+
+
+
+class formatter(logging.Formatter):
+    levelColors = {
+        "DEBUG":clrs.CYAN,
+        "INFO": clrs.LIGHTGREEN_EX,
+        "OK":clrs.GREEN,
+        "SUCCESS":clrs.GREEN,
+        "WARNING":clrs.YELLOW,
+        "ERROR": clrs.RED,
+        "CRITICAL":clrs.LIGHTRED_EX
+        }
+    def __init__(self,format):
+        logging.Formatter.__init__(self,format)
+
+
+    @staticmethod
+    def formatString(string,color=clrs.WHITE,style_=style.NORMAL):
+        return reset + style_ + color + string + reset
+
+
+    def format(self, record: logging.LogRecord) -> str:
+        lvl= record.levelname
+        color = formatter.levelColors[lvl.upper()]
+
+
+        record.levelnameCap = formatter.formatString(lvl.upper(), color, style.BRIGHT)
+        record.levelname = formatter.formatString(
+            (lambda :lvl.lower() if not lvl in ("OK","SUCCESS") else lvl.upper())()
+            ,color)
+
+        if record.funcName in ("__init__",):
+            record.funcName=record.funcName.replace("_",'')
+
+
+
+
+
+        record.name = "[" + record.name + "]"
+
+        s = reset+logging.Formatter.format(self,record)
+        return s
+
+
+class logger(logging.Logger):
+    FORMAT = "[%(levelnameCap)s] %(name)s %(funcName)s - %(levelname)s: %(message)s\n"
+
+    def __init__(self,name,f=False,*args):
+        logging.Logger.__init__(self,name,logging.INFO)
+        console = logging.StreamHandler()
+        fmt = formatter(logger.FORMAT)
+        # console.addFilter(logFilter())
+        console.setFormatter(fmt)
+
+        self.addHandler(console)
+
+    def ok(self,msg='',*args,**kwargs):
+        self._log(23,msg,args,**kwargs)
+
+    def success(self,msg='',*args,**kwargs):
+        self._log(25,msg,args,**kwargs)
+
+
+    def getChild(self, suffix: str):
+        n = '] ['.join((self.name,suffix))
+        return logger(n)
