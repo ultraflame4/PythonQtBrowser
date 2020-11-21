@@ -23,8 +23,6 @@ class _BrowserTabs_container(QtWidgets.QTabWidget):
         self.tabCloseRequested.connect(self.removeTab)
 
 
-        browser_tab.BrowserTabManager.new_tab = self.OpenTab
-
     def getUtilsContainer(self, site):
         o = browser_tab.utils_container(self, self.log.getChild(f"BrowserTab({self.count()})"))
         o.home_website = site

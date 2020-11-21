@@ -7,9 +7,6 @@ from PyQt5.QtWebEngineWidgets import *
 from . import tools, utils
 
 
-class BrowserTabManager:
-    new_tab: typing.Callable = None
-
 @dataclass()
 class widgets_container:
     tab_widget:utils.dumb_Tab=None
@@ -23,9 +20,9 @@ class utils_container:
     def __init__(self, tab_container, logger):
         self.log = logger
         self.WebpageHandler = tools.WebpageHandler()
-        self.WebpageHandler.BrowserHandler = BrowserTabManager
+        self.WebpageHandler.utils=self
         self.WebpageHandler.log = self.log.getChild("WebpageHandler")
-        self.BrowserTabContainer = tab_container
+        self.BrowserTabManager = tab_container
         self.widgets=widgets_container()
         self.home_website = None
 
@@ -84,6 +81,7 @@ class search_bar(QtWidgets.QWidget):
         self.setLayout(self._layout)
 
         self.log.ok()
+
     def search_button(self):
         url = self.webaddressbar.text()
         self.utils.WebpageHandler.load_webpage(url)
@@ -124,6 +122,7 @@ class webpage_display(QWebEngineView):
         self.utils.widgets.tab_widget.setTabText(self.title())
         self.utils.widgets.tab_widget.setTabIcon(self.webpage.icon())
         self.utils.WebpageHandler.finished_load()
+        self.bar.setValue(0)
 
     def onIconChange(self,QIcon_):
         self.log.info("Icon changed, setting new icon..")

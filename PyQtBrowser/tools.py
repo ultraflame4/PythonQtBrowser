@@ -74,7 +74,7 @@ class WebpageHandler:
         self._page_history = []
         self._page_future = []
         self._current_url = None
-        self.BrowserHandler = None
+        self.utils=None
         self.log: logger = None
         # URL to search when text is not url
         self.default_searchaddr = "https://www.google.com/search?q="
@@ -190,7 +190,7 @@ class WebpageHandler:
     def newTab(self, *args):
         self.log.info("calling open new tab method..")
 
-        self.BrowserHandler.new_tab()
+        self.utils.BrowserTabManager.new_tab()
 
     def finished_load(self):
 

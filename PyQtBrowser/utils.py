@@ -15,3 +15,6 @@ class dumb_Tab:
 
     def setTabText(self, text):
         self.o.setTabText(self.index, text)
+
+
+
