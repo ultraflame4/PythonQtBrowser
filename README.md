@@ -15,7 +15,7 @@ run `main.py` to start
 
 #### Notes:
 - As of 21/11/2020, you cannot login into google
-- It is kind of buggy, so please report them the bugs
+- It is kind of buggy, so please report the bugs
 
 - It is slow
 
