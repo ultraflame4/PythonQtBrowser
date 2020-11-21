@@ -246,8 +246,8 @@ class WebpageHandler:
             self._current_url=qurl.url()
             self.search_barWidget.setCursorPosition(0)
 
-            self.tab.setTabIcon(self.info.favicon)
-            self.tab.setTabText(self.info.title)
+        self.tab.setTabIcon(self.info.favicon)
+        self.tab.setTabText(self.info.title)
 
     def newTab(self,*args):
         self.log.info("opening new tab..")
