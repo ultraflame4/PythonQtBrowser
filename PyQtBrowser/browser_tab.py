@@ -84,6 +84,7 @@ class webpage_display(QWebEngineView):
         super().__init__()
         self.log = utils.log.getChild("webpageDisplay")
         self.utils = utils
+        self.utils.WebpageHandler.engine=self
         self.utils.WebpageHandler.load_site = self.load_site
         self.resize(1280, 780)
         self.webpage = self.page()

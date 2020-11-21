@@ -69,7 +69,7 @@ class logger(logging.Logger):
 
         fmt = formatter(logger.FORMAT)
         # console.addFilter(logFilter())
-        console.setLevel(20)
+        console.setLevel(0)
         console.setFormatter(fmt)
 
         self.addHandler(console)

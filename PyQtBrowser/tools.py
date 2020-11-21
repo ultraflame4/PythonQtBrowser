@@ -5,6 +5,7 @@ import re
 import threading
 import typing
 from urllib import request, parse
+from urllib.parse import urlparse
 from urllib.request import urlopen
 
 import bs4
@@ -71,13 +72,21 @@ class HtmlInfo:
 
 
 def htmlinfo_maker(url):
-    soup = bs4.BeautifulSoup(requests.get(url).text, "lxml")
+    soup = bs4.BeautifulSoup(requests.get(url).text, "html.parser")
 
     pixmal = QPixmap()
     pixmal.loadFromData(urlopen(favicon.get(url)[0].url).read())
     icon = QIcon(pixmal)
 
-    page_title = soup.find("title").get_text()
+    try:
+        page_title = soup.find("title",recursive=True).get_text()
+    except AttributeError:
+        n=urlparse(url)
+        m=n.netloc.split('.')[1]
+        page_title=m+'-'+n.path.split('/')[-1]
+
+    if len(page_title) > 15:
+        page_title=page_title[:12]+'...'
 
     return HtmlInfo(
         favicon=icon,
