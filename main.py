@@ -11,4 +11,5 @@ widget = PyQtBrowser.Browser()
 
 widget.show()
 
-sys.exit(app.exec_())
+e=app.exec_()
+sys.exit(e)

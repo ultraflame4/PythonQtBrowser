@@ -62,38 +62,6 @@ class HtmlRequestsManager:
     pass
 
 
-# A object to hold info abt the page
-# eg, icons ,title ,desc
-@dataclasses.dataclass
-class HtmlInfo:
-    src_url: str
-    favicon: QIcon
-    title: str
-
-
-def htmlinfo_maker(url):
-    soup = bs4.BeautifulSoup(requests.get(url).text, "html.parser")
-
-    pixmal = QPixmap()
-    pixmal.loadFromData(urlopen(favicon.get(url)[0].url).read())
-    icon = QIcon(pixmal)
-
-    try:
-        page_title = soup.find("title",recursive=True).get_text()
-    except AttributeError:
-        n=urlparse(url)
-        m=n.netloc.split('.')[1]
-        page_title=m+'-'+n.path.split('/')[-1]
-
-    if len(page_title) > 15:
-        page_title=page_title[:12]+'...'
-
-    return HtmlInfo(
-        favicon=icon,
-        title=page_title,
-        src_url=url
-        )
-
 
 class WebpageHandler:
     """
@@ -107,9 +75,6 @@ class WebpageHandler:
         self._page_future = []
         self._current_url = None
         self.BrowserHandler = None
-        self.tab = None
-
-        self.info: HtmlInfo = None
         self.log: logger = None
         # URL to search when text is not url
         self.default_searchaddr = "https://www.google.com/search?q="
@@ -186,7 +151,7 @@ class WebpageHandler:
 
             self._current_url = url
 
-            self.info = htmlinfo_maker(url)
+            # self.info = htmlinfo_maker(url)
 
     def load_lastpage(self):
         self.log.info("Attempting to load previous page...")
@@ -221,8 +186,6 @@ class WebpageHandler:
             self._current_url = qurl.url()
             self.search_barWidget.setCursorPosition(0)
 
-        self.tab.setTabIcon(self.info.favicon)
-        self.tab.setTabText(self.info.title)
 
     def newTab(self, *args):
         self.log.info("calling open new tab method..")

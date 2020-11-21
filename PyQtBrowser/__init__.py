@@ -1,19 +1,9 @@
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 
 from . import browser_tab, utils
 from .logger import logger
 
 
-class dumb_Tab:
-    def __init__(self, i, o):
-        self.index = i
-        self.o = o
-
-    def setTabIcon(self, icon):
-        self.o.setTabIcon(self.index, icon)
-
-    def setTabText(self, text):
-        self.o.setTabText(self.index, text)
 
 
 class _BrowserTabs_container(QtWidgets.QTabWidget):
@@ -21,11 +11,18 @@ class _BrowserTabs_container(QtWidgets.QTabWidget):
         super().__init__()
         self.log = logger("BrowserTabsContainer")
 
+        pixMal = QtGui.QPixmap("./resources/favicon.png")
+        self.tmpQicon = QtGui.QIcon(pixMal)
+
+
+
         self.log.info("Initialising BrowserTabsContainer")
 
         self.setTabsClosable(True)
         self.setMovable(True)
         self.tabCloseRequested.connect(self.removeTab)
+
+
         browser_tab.BrowserTabManager.new_tab = self.OpenTab
 
     def getUtilsContainer(self, site):
@@ -33,9 +30,6 @@ class _BrowserTabs_container(QtWidgets.QTabWidget):
         o.home_website = site
 
         return o
-
-    def setTabConfigs(self, index, info):
-        pass
 
     def OpenTab(self, *args, site: str = 'www.google.com'):
         self.log.info(f"Opening new tab with website: {site}")
@@ -45,10 +39,9 @@ class _BrowserTabs_container(QtWidgets.QTabWidget):
         self.log.info("Creating new 'BrowserTab' instance")
         o = browser_tab.BrowserTab(self.getUtilsContainer(site))
         self.log.info("Got new Instance successfully, adding tab..")
-        i = self.addTab(o, o.webpage_display.utils.WebpageHandler.info.favicon,
-                        o.webpage_display.utils.WebpageHandler.info.title)
+        i = self.addTab(o,self.tmpQicon, 'untitled')
 
-        o.utils.WebpageHandler.tab = dumb_Tab(i, self)
+        o.utils.widgets.tab_widget = utils.dumb_Tab(i, self)
 
     def _getid(self):
         r = self._tabId_counter

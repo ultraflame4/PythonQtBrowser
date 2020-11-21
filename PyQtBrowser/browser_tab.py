@@ -1,13 +1,22 @@
 import typing
+from dataclasses import dataclass
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWebEngineWidgets import *
 
-from . import tools
+from . import tools, utils
 
 
 class BrowserTabManager:
     new_tab: typing.Callable = None
+
+@dataclass()
+class widgets_container:
+    tab_widget:utils.dumb_Tab=None
+
+
+
+
 
 
 class utils_container:
@@ -17,6 +26,7 @@ class utils_container:
         self.WebpageHandler.BrowserHandler = BrowserTabManager
         self.WebpageHandler.log = self.log.getChild("WebpageHandler")
         self.BrowserTabContainer = tab_container
+        self.widgets=widgets_container()
         self.home_website = None
 
 
@@ -84,7 +94,6 @@ class webpage_display(QWebEngineView):
         super().__init__()
         self.log = utils.log.getChild("webpageDisplay")
         self.utils = utils
-        self.utils.WebpageHandler.engine=self
         self.utils.WebpageHandler.load_site = self.load_site
         self.resize(1280, 780)
         self.webpage = self.page()
@@ -95,7 +104,8 @@ class webpage_display(QWebEngineView):
         self.webpage.fullScreenRequested.connect(self.on_fullscreenreq)
         self.bar = bar
         self.loadProgress.connect(self.load_progress)
-        self.loadFinished.connect(self.utils.WebpageHandler.finished_load)
+        self.loadFinished.connect(self.on_loadFinish)
+        self.iconChanged.connect(self.onIconChange)
 
     def on_fullscreenreq(self, req: QWebEngineFullScreenRequest):
         req.accept()
@@ -110,6 +120,16 @@ class webpage_display(QWebEngineView):
     def load_site(self, url):
         self.load(QtCore.QUrl(url))
 
+    def on_loadFinish(self):
+        self.utils.widgets.tab_widget.setTabText(self.title())
+        self.utils.widgets.tab_widget.setTabIcon(self.webpage.icon())
+        self.utils.WebpageHandler.finished_load()
+
+    def onIconChange(self,QIcon_):
+        self.log.info("Icon changed, setting new icon..")
+        self.utils.widgets.tab_widget.setTabIcon(QIcon_)
+        self.log.ok("New Icon set")
+        pass
 
 class BrowserTab(QtWidgets.QWidget):
     def __init__(self, utils: utils_container):
