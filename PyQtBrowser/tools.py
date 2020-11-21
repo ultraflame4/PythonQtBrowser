@@ -195,7 +195,7 @@ class WebpageHandler:
         self.log.info(f"futurepages left: {self._page_future})")
 
     def load_webpage(self,url,_history=True,_supress_load=False):
-        self.log.info(f"Loading Url: {url} (Suprressed: {_supress_load})")
+        self.log.info(f"Loading Url: {url} (Suprressed: {_supress_load}, History: {_history})")
         url=self.formaturl(url)
 
         if url != self._current_url:
@@ -203,7 +203,7 @@ class WebpageHandler:
                 self.load_site(self.formaturl(url))
                 self.invalidate_futurepages(url)
 
-            if self._current_url != None:
+            if self._current_url != None and _history:
                 self._page_history.append(self._current_url)
 
 
