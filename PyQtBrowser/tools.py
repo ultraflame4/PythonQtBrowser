@@ -204,8 +204,10 @@ class WebpageHandler:
                 self.invalidate_futurepages(url)
 
             if self._current_url != None and _history:
+                self.log.info(f"Appending {self._current_url} to history")
                 self._page_history.append(self._current_url)
 
+            self._current_url = url
 
             self.info = htmlinfo_maker(url)
 
@@ -234,13 +236,18 @@ class WebpageHandler:
             self.log.info(f"Future pages: {self._page_future}")
 
     def url_changed(self,qurl:QtCore.QUrl):
-        self.load_webpage(qurl.url(),_supress_load=True)
-        self.search_barWidget.setText(qurl.url())
-        self._current_url=qurl.url()
-        self.search_barWidget.setCursorPosition(0)
+        self.log.info(f"url change detected : {qurl.url()}")
 
-        self.tab.setTabIcon(self.info.favicon)
-        self.tab.setTabText(self.info.title)
+        if self._current_url != qurl.url():
+            self.log.info(f"Change not caused by self, registering change...")
+
+            self.load_webpage(qurl.url(),_supress_load=True)
+            self.search_barWidget.setText(qurl.url())
+            self._current_url=qurl.url()
+            self.search_barWidget.setCursorPosition(0)
+
+            self.tab.setTabIcon(self.info.favicon)
+            self.tab.setTabText(self.info.title)
 
     def newTab(self,*args):
         self.log.info("opening new tab..")
