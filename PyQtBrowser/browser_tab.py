@@ -1,4 +1,3 @@
-import typing
 from dataclasses import dataclass
 
 from PyQt5 import QtCore, QtWidgets

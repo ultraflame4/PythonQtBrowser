@@ -1,6 +1,8 @@
 # PythonQtBrowser
 This is a browser made in python with Qt using a PyQt5
 
+run `main.py` to start
+
 ##### Available Features:
 - multi tab support
 - it works
@@ -13,6 +15,15 @@ This is a browser made in python with Qt using a PyQt5
 
 #### Notes:
 - As of 21/11/2020, you cannot login into google
-- It is kind of buggy, so please report them along with the console log
+- It is kind of buggy, so please report them the bugs
 
 - It is slow
+
+## Dependencies:
+- Python
+- PyQt5
+- colorama
+- PyQtWebEngine
+
+Enter `pip install -r requirements.txt` to install the dependencies
+

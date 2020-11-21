@@ -1,18 +1,11 @@
-import dataclasses
-import logging
 import mimetypes
 import re
 import threading
 import typing
 from urllib import request, parse
-from urllib.parse import urlparse
-from urllib.request import urlopen
 
-import bs4
-import favicon
-import requests
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtGui import *
+
 from PyQt5.QtWebEngineWidgets import *
 
 from .logger import logger
