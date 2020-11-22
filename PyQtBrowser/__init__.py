@@ -1,18 +1,16 @@
 from PyQt5 import QtWidgets, QtGui
 
-from . import browser_tab, utils
+from . import browser_tab, utils, configuration
 from .logger import logger
 
 
-
-
 class _BrowserTabs_container(QtWidgets.QTabWidget):
-    def __init__(self,l:logger):
+    def __init__(self, browser, l:logger):
         super().__init__()
+        self.Browser = browser
         self.log = l.getChild("BrowserTabsContainer")
 
-        pixMal = QtGui.QPixmap("./resources/favicon.png")
-        self.tmpQicon = QtGui.QIcon(pixMal)
+        self.defaultFaviconQicon = browser.resources.favicon_qicon
 
 
 
@@ -37,7 +35,7 @@ class _BrowserTabs_container(QtWidgets.QTabWidget):
         self.log.verbose("Creating new 'BrowserTab' instance")
         o = browser_tab.BrowserTab(self.getUtilsContainer(site))
         self.log.done("Got new Instance successfully, adding tab..")
-        i = self.addTab(o,self.tmpQicon, 'untitled')
+        i = self.addTab(o, self.defaultFaviconQicon, 'untitled')
         self.log.done("Added tab")
         o.utils.widgets.tab_widget = utils.dumb_Tab(i, self)
         self.log.verbose("Created a dumb_tab instances and assigned to utils.widget.tab_widget instance attribute")
@@ -49,14 +47,18 @@ class Browser(QtWidgets.QWidget):
         self.log = logger("Browser")
         self.log.info("Initialising")
 
+        self.resources : utils.resourceManager = utils.resourceManager()
+
         self._layout = QtWidgets.QVBoxLayout()
 
 
         self._layout.setSpacing(1)
         self._layout.setContentsMargins(3, 5, 3, 3)
 
+        self.SettingsMenu = configuration.SettingsMenu(self.log)
 
-        self.container = _BrowserTabs_container(self.log)
+
+        self.container = _BrowserTabs_container(self,self.log)
 
 
         self.container.OpenTab()

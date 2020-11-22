@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtWebEngineWidgets import *
 
 from . import tools, utils
@@ -14,7 +14,6 @@ class widgets_container:
 
 
 
-
 class utils_container:
     def __init__(self, tab_container, logger):
         self.log = logger
@@ -22,8 +21,13 @@ class utils_container:
         self.WebpageHandler.utils=self
         self.WebpageHandler.log = self.log.getChild("WebpageHandler")
         self.BrowserTabManager = tab_container
+        self.Browser = tab_container.Browser
         self.widgets=widgets_container()
+        self.ResourceManager = tab_container.Browser.resources
         self.home_website = None
+
+
+
 
 
 class search_bar(QtWidgets.QWidget):
@@ -40,41 +44,57 @@ class search_bar(QtWidgets.QWidget):
         self.setFixedHeight(30)
         self.log.verbose("Fixed height")
 
+
         self._layout = QtWidgets.QHBoxLayout()
         self.log.verbose("Got new layout instance")
 
+
         self.log.verbose("Grabbing new widget intances:")
+
         self.backbutton = QtWidgets.QPushButton("Back")
         self.log.verbose("-backbutton")
+
         self.forwardbutton = QtWidgets.QPushButton("Front")
         self.log.verbose("-forwardbutton")
+
         self.newTabButton = QtWidgets.QPushButton("+")
         self.log.verbose("-newTabButton")
+
         self.newTabButton.setFixedSize(25, 20)
         self.log.verbose("-newTabButton:fixed size")
 
         self.searchbutton = QtWidgets.QPushButton("Search")
         self.log.verbose("-searchbutton")
+
         self.webaddressbar = QtWidgets.QLineEdit()
         self.log.debug("-webaddressbar")
 
+
+        self.settingsButton = QtWidgets.QPushButton(icon=self.utils.ResourceManager.settings_qicon)
+
+
+
         self.utils.WebpageHandler.search_barWidget = self.webaddressbar
 
+
+        # Signals
         self.searchbutton.clicked.connect(self.search_button)
         self.backbutton.clicked.connect(self.utils.WebpageHandler.load_lastpage)
         self.forwardbutton.clicked.connect(self.utils.WebpageHandler.load_futurepage)
         self.newTabButton.clicked.connect(self.utils.WebpageHandler.newTab)
+        self.settingsButton.clicked.connect(self.utils.Browser.SettingsMenu.show)
 
+
+        # Add widgets to layout
         self._layout.addWidget(self.backbutton, stretch=0, alignment=QtCore.Qt.AlignLeft)
         self._layout.addWidget(self.forwardbutton, stretch=0, alignment=QtCore.Qt.AlignLeft)
         self._layout.addWidget(self.newTabButton, alignment=QtCore.Qt.AlignLeft)
         self._layout.addWidget(self.webaddressbar, stretch=1)
         self._layout.addWidget(self.searchbutton, stretch=0, alignment=QtCore.Qt.AlignRight)
+        self._layout.addWidget(self.settingsButton, alignment=QtCore.Qt.AlignRight)
 
         self._layout.setSpacing(3)
 
-        # pyside :self._layout.setMargin(0)
-        # pyqt5
         self._layout.setContentsMargins(2, 3, 2, 3)
 
         self.setLayout(self._layout)
