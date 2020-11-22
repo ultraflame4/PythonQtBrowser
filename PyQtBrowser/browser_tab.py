@@ -35,26 +35,26 @@ class search_bar(QtWidgets.QWidget):
         self.utils = utils
 
         self.setContentsMargins(0, 0, 0, 0)
-        self.log.debug("Setted config :margins")
+        self.log.verbose("Setted config :margins")
 
         self.setFixedHeight(30)
-        self.log.debug("Fixed height")
+        self.log.verbose("Fixed height")
 
         self._layout = QtWidgets.QHBoxLayout()
-        self.log.debug("Got new layout instance")
+        self.log.verbose("Got new layout instance")
 
-        self.log.debug("Grabbing new widget intances:")
+        self.log.verbose("Grabbing new widget intances:")
         self.backbutton = QtWidgets.QPushButton("Back")
-        self.log.debug("-backbutton")
+        self.log.verbose("-backbutton")
         self.forwardbutton = QtWidgets.QPushButton("Front")
-        self.log.debug("-forwardbutton")
+        self.log.verbose("-forwardbutton")
         self.newTabButton = QtWidgets.QPushButton("+")
-        self.log.debug("-newTabButton")
+        self.log.verbose("-newTabButton")
         self.newTabButton.setFixedSize(25, 20)
-        self.log.debug("-newTabButton:fixed size")
+        self.log.verbose("-newTabButton:fixed size")
 
         self.searchbutton = QtWidgets.QPushButton("Search")
-        self.log.debug("-searchbutton")
+        self.log.verbose("-searchbutton")
         self.webaddressbar = QtWidgets.QLineEdit()
         self.log.debug("-webaddressbar")
 
@@ -111,7 +111,7 @@ class webpage_display(QWebEngineView):
         tools.DownloadHandler.request_download(download)
 
     def load_progress(self, Progress):
-        self.log.debug(f"Loading - {Progress}%")
+        self.log.verbose(f"Loading - {Progress}%")
         self.bar.setValue(Progress)
 
     def load_site(self, url):
@@ -124,9 +124,9 @@ class webpage_display(QWebEngineView):
         self.bar.setValue(0)
 
     def onIconChange(self,QIcon_):
-        self.log.info("Icon changed, setting new icon..")
+        self.log.verbose("Icon changed, setting new icon..")
         self.utils.widgets.tab_widget.setTabIcon(QIcon_)
-        self.log.ok("New Icon set")
+        self.log.info("Icon was changed and the tab has been updated")
         pass
 
 class BrowserTab(QtWidgets.QWidget):
@@ -139,23 +139,23 @@ class BrowserTab(QtWidgets.QWidget):
 
         self._layout = QtWidgets.QVBoxLayout()
 
-        self.log.debug("Created a new layout instance")
+        self.log.verbose("Created a new layout instance")
         self._layout.setAlignment(QtCore.Qt.AlignTop)
-        self.log.debug("Configured layout alignment")
+        self.log.verbose("Configured layout alignment")
 
         self.search_bar_widget = search_bar(self.utils)
-        self.log.debug("Created a searchbar instance")
+        self.log.verbose("Created a searchbar instance")
 
         self.loading_bar = QtWidgets.QProgressBar()
-        self.log.debug("Created progress bar instance")
+        self.log.verbose("Created progress bar instance")
         self.loading_bar.setContentsMargins(2, 3, 2, 2)
         self.loading_bar.setTextVisible(False)
         self.loading_bar.setFixedHeight(2)
 
         self.webpage_display = webpage_display(self.utils, self.loading_bar)
-        self.log.debug("Created a webpage_display instance")
+        self.log.verbose("Created a webpage_display instance")
 
-        self.log.debug("Configuring..:")
+        self.log.verbose("Configuring..:")
         self._layout.setContentsMargins(0, 0, 0, 0)
         self.log.done("setContentMargins")
 
@@ -174,8 +174,7 @@ class BrowserTab(QtWidgets.QWidget):
         self.setLayout(self._layout)
         self.log.done("setLayout")
 
+        self.log.info("opening default website")
         self.utils.WebpageHandler.load_webpage(self.utils.home_website)
-        self.log.info("Opened default home_website")
 
-        self.log.success()
-        self.log.info("Successfuly initiated BrowserTab()")
+        self.log.ok("successfully initiated instance")

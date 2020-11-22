@@ -121,25 +121,27 @@ class WebpageHandler:
             self.log.error("No future pages!")
 
     def invalidate_futurepages(self, url):
-        self.log.done(f"Validating futurepages (Current: {self._page_future})..")
+        self.log.verbose(f"Validating futurepages (Current: {self._page_future})..")
+        self.log.debug(f"Future Pages:{self._page_future}, current {url}")
         if len(self._page_future) != 0:
             if url != self._page_future[-1]:
                 self._page_future.clear()
-                self.log.done("Invalidated future_pages")
+                self.log.verbose("Invalidated future_pages")
 
-        self.log.info(f"futurepages left: {self._page_future})")
+        self.log.verbose(f"futurepages left: {self._page_future})")
 
     def load_webpage(self, url, _history=True, _supress_load=False):
-        self.log.info(f"Loading Url: {url} (Suprressed: {_supress_load}, History: {_history})")
+        self.log.info(f"Loading Url: {url} (Suppressed: {_supress_load}, History: {_history})")
         url = self.formaturl(url)
 
         if url != self._current_url:
             if not _supress_load:
                 self.load_site(self.formaturl(url))
-                self.invalidate_futurepages(url)
+
+            self.invalidate_futurepages(url)
 
             if self._current_url != None and _history:
-                self.log.done(f"Appending {self._current_url} to history")
+                self.log.verbose(f"Appending {self._current_url} to history")
                 self._page_history.append(self._current_url)
 
             self._current_url = url
@@ -159,20 +161,22 @@ class WebpageHandler:
             self.log.error("There is no lastpage!")
 
         else:
-            self.log.ok("Successfully got previous page.. proceeding...")
+            self.log.verbose("Successfully got previous page.. proceeding...")
 
             self.search_barWidget.setText(url)
 
             self.load_webpage(url, _history=False)
             self.log.done(f"Appending current url {curl} to _page_future : {str(self._page_future)}")
             self._page_future.append(curl)
-            self.log.debug(f"Future pages: {self._page_future}")
+            self.log.verbose(f"Future pages: {self._page_future}")
+
+            self.log.ok("Loaded previous page")
 
     def url_changed(self, qurl: QtCore.QUrl):
         self.log.info(f"url change detected : {qurl.url()}")
 
         if self._current_url != qurl.url():
-            self.log.debug(f"Change not caused by self, registering change...")
+            self.log.verbose(f"Change not caused by self, registering changes...")
 
             self.load_webpage(qurl.url(), _supress_load=True)
             self.search_barWidget.setText(qurl.url())
@@ -181,9 +185,9 @@ class WebpageHandler:
 
 
     def newTab(self, *args):
-        self.log.info("calling open new tab method..")
+        self.log.info("Passing callback to BrowserTabContainer.OpenTab()")
 
-        self.utils.BrowserTabManager.new_tab()
+        self.utils.BrowserTabManager.OpenTab()
 
     def finished_load(self):
 

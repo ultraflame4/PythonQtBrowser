@@ -7,9 +7,9 @@ from .logger import logger
 
 
 class _BrowserTabs_container(QtWidgets.QTabWidget):
-    def __init__(self):
+    def __init__(self,l:logger):
         super().__init__()
-        self.log = logger("BrowserTabsContainer")
+        self.log = l.getChild("BrowserTabsContainer")
 
         pixMal = QtGui.QPixmap("./resources/favicon.png")
         self.tmpQicon = QtGui.QIcon(pixMal)
@@ -30,36 +30,43 @@ class _BrowserTabs_container(QtWidgets.QTabWidget):
         return o
 
     def OpenTab(self, *args, site: str = 'www.google.com'):
-        self.log.info(f"Opening new tab with website: {site}")
+        self.log.info(f"Creating new tab with website: {site} opened")
 
         utils.typecheck(str, site)
 
-        self.log.info("Creating new 'BrowserTab' instance")
+        self.log.verbose("Creating new 'BrowserTab' instance")
         o = browser_tab.BrowserTab(self.getUtilsContainer(site))
-        self.log.info("Got new Instance successfully, adding tab..")
+        self.log.done("Got new Instance successfully, adding tab..")
         i = self.addTab(o,self.tmpQicon, 'untitled')
-
+        self.log.done("Added tab")
         o.utils.widgets.tab_widget = utils.dumb_Tab(i, self)
-
-    def _getid(self):
-        r = self._tabId_counter
-        self._tabId_counter += 1
-        return r
+        self.log.verbose("Created a dumb_tab instances and assigned to utils.widget.tab_widget instance attribute")
 
 
 class Browser(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+        self.log = logger("Browser")
+        self.log.info("Initialising")
 
         self._layout = QtWidgets.QVBoxLayout()
+
+
         self._layout.setSpacing(1)
         self._layout.setContentsMargins(3, 5, 3, 3)
 
-        self.container = _BrowserTabs_container()
+
+        self.container = _BrowserTabs_container(self.log)
+
 
         self.container.OpenTab()
 
         self.container._layout = self._layout
 
         self._layout.addWidget(self.container)
+
         self.setLayout(self._layout)
+
+        self.log.verbose("Setted layout")
+
+        self.log.success("Successfully initiated instance")

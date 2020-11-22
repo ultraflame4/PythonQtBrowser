@@ -12,6 +12,7 @@ style = colorama.Style
 logging.addLevelName(25, "SUCCESS")
 logging.addLevelName(23, "OK")
 logging.addLevelName(15,"DONE")
+logging.addLevelName(16,"VERBOSE")
 
 class logFilter(logging.Filter):
     def filter(self, record) -> int:
@@ -21,7 +22,8 @@ class logFilter(logging.Filter):
 
 class formatter(logging.Formatter):
     levelColors = {
-        "DEBUG": clrs.LIGHTBLACK_EX,
+        "VERBOSE": clrs.LIGHTCYAN_EX,
+        "DEBUG": clrs.LIGHTWHITE_EX,
         "DONE":clrs.LIGHTBLACK_EX,
         "INFO": clrs.LIGHTGREEN_EX,
         "OK": clrs.GREEN,
@@ -83,6 +85,8 @@ class logger(logging.Logger):
 
     def ok(self, msg='', *args, **kwargs):
         self._log(23, msg, args, **kwargs)
+    def verbose(self, msg='', *args, **kwargs):
+        self._log(16, msg, args, **kwargs)
 
     def success(self, msg='', *args, **kwargs):
         self._log(25, msg, args, **kwargs)
