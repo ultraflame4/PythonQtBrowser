@@ -46,7 +46,7 @@ class search_bar(QtWidgets.QWidget):
 
 
         self._layout = QtWidgets.QHBoxLayout()
-        self.log.verbose("Got new layout instance")
+        self.log.verbose("Got new _layout instance")
 
 
         self.log.verbose("Grabbing new widget intances:")
@@ -85,7 +85,7 @@ class search_bar(QtWidgets.QWidget):
         self.settingsButton.clicked.connect(self.utils.Browser.SettingsMenu.show)
 
 
-        # Add widgets to layout
+        # Add widgets to _layout
         self._layout.addWidget(self.backbutton, stretch=0, alignment=QtCore.Qt.AlignLeft)
         self._layout.addWidget(self.forwardbutton, stretch=0, alignment=QtCore.Qt.AlignLeft)
         self._layout.addWidget(self.newTabButton, alignment=QtCore.Qt.AlignLeft)
@@ -158,10 +158,10 @@ class BrowserTab(QtWidgets.QWidget):
         self.utils = utils
 
         self._layout = QtWidgets.QVBoxLayout()
-
-        self.log.verbose("Created a new layout instance")
         self._layout.setAlignment(QtCore.Qt.AlignTop)
-        self.log.verbose("Configured layout alignment")
+
+        self.log.verbose("Created a new _layout instance")
+        self.log.verbose("Configured _layout alignment")
 
         self.search_bar_widget = search_bar(self.utils)
         self.log.verbose("Created a searchbar instance")

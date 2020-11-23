@@ -69,6 +69,6 @@ class Browser(QtWidgets.QWidget):
 
         self.setLayout(self._layout)
 
-        self.log.verbose("Setted layout")
+        self.log.verbose("Setted _layout")
 
         self.log.success("Successfully initiated instance")

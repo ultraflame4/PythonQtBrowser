@@ -25,7 +25,7 @@ class resourceManager:
     def __init__(self):
         self.path = './resources'
 
-        self.favicon_pixmap = QtGui.QPixmap(f"{self.path}/favicon.png")
+        self.favicon_pixmap = QtGui.QPixmap(f"{self.path}/favicon.png").scaledToHeight(10)
         self.favicon_qicon = QtGui.QIcon(self.favicon_pixmap)
 
         self.settings_pixmap = QtGui.QPixmap("./resources/settings.png").scaledToHeight(14)
