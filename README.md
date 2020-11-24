@@ -24,6 +24,7 @@ run `main.py` to start
 - PyQt5
 - colorama
 - PyQtWebEngine
+- adblockparser
 
 Enter `pip install -r requirements.txt` to install the dependencies
 
