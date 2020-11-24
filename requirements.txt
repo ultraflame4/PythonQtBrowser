@@ -2,3 +2,5 @@ colorama==0.4.4
 PyQt5==5.15.1
 PyQt5-sip==12.8.1
 PyQtWebEngine==5.15.1
+
+adblockparser~=0.7

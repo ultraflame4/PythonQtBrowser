@@ -1,25 +1,22 @@
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets
 
 from . import browser_tab, utils, configuration
 from .logger import logger
 
 
 class _BrowserTabs_container(QtWidgets.QTabWidget):
-    def __init__(self, browser, l:logger):
+    def __init__(self, browser, l: logger):
         super().__init__()
         self.Browser = browser
         self.log = l.getChild("BrowserTabsContainer")
 
         self.defaultFaviconQicon = browser.resources.favicon_qicon
 
-
-
         self.log.info("Initialising BrowserTabsContainer")
 
         self.setTabsClosable(True)
         self.setMovable(True)
         self.tabCloseRequested.connect(self.removeTab)
-
 
     def getUtilsContainer(self, site):
         o = browser_tab.utils_container(self, self.log.getChild(f"BrowserTab({self.count()})"))
@@ -47,19 +44,16 @@ class Browser(QtWidgets.QWidget):
         self.log = logger("Browser")
         self.log.info("Initialising")
 
-        self.resources : utils.resourceManager = utils.resourceManager()
+        self.resources: utils.resourceManager = utils.resourceManager()
 
         self._layout = QtWidgets.QVBoxLayout()
-
 
         self._layout.setSpacing(1)
         self._layout.setContentsMargins(3, 5, 3, 3)
 
         self.SettingsMenu = configuration.SettingsMenu(self.log)
 
-
-        self.container = _BrowserTabs_container(self,self.log)
-
+        self.container = _BrowserTabs_container(self, self.log)
 
         self.container.OpenTab()
 

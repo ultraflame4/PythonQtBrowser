@@ -11,8 +11,9 @@ style = colorama.Style
 
 logging.addLevelName(25, "SUCCESS")
 logging.addLevelName(23, "OK")
-logging.addLevelName(6,"DONE")
-logging.addLevelName(5,"VERBOSE")
+logging.addLevelName(6, "DONE")
+logging.addLevelName(5, "VERBOSE")
+
 
 class logFilter(logging.Filter):
     def filter(self, record) -> int:
@@ -24,7 +25,7 @@ class formatter(logging.Formatter):
     levelColors = {
         "VERBOSE": clrs.LIGHTCYAN_EX,
         "DEBUG": clrs.LIGHTWHITE_EX,
-        "DONE":clrs.LIGHTBLACK_EX,
+        "DONE": clrs.LIGHTBLACK_EX,
         "INFO": clrs.LIGHTGREEN_EX,
         "OK": clrs.GREEN,
         "SUCCESS": clrs.GREEN,
@@ -40,8 +41,6 @@ class formatter(logging.Formatter):
     def formatString(string, color=clrs.WHITE, style_=style.NORMAL):
         return reset + style_ + color + string + reset
 
-
-
     def format(self, record: logging.LogRecord) -> str:
         lvl = record.levelname
         color = formatter.levelColors[lvl.upper()]
@@ -55,9 +54,9 @@ class formatter(logging.Formatter):
             record.funcName = record.funcName.replace("_", '')
 
         record.name = f"[{record.name}]"
-        record.threadName=formatter.formatString(record.threadName.lower().replace("thread","").capitalize(),
-                                                 color=clrs.WHITE,
-                                                 style_=style.BRIGHT)
+        record.threadName = formatter.formatString(record.threadName.lower().replace("thread", "").capitalize(),
+                                                   color=clrs.WHITE,
+                                                   style_=style.BRIGHT)
 
         record.processName = formatter.formatString(record.processName.lower().replace("process", "").capitalize(),
                                                     color=clrs.LIGHTWHITE_EX)
