@@ -3,6 +3,18 @@ from PyQt5 import QtWidgets,QtGui,QtCore
 from PyQtBrowser.logger import logger
 
 
+
+
+class Configurations:
+    class general:
+        adblock : bool = False
+
+
+
+
+
+
+
 class ConfigMenuBase(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
@@ -22,23 +34,27 @@ class generalConfigMenu(ConfigMenuBase):
     def __init__(self):
         super().__init__()
 
-        self.toggle_adblock_checkbox = self.addWidget(QtWidgets.QCheckBox("Enable url blacklist"))
-
-
-
+        self.toggle_adblock_checkbox = self.addWidget(QtWidgets.QCheckBox("Enable AdBlock (Blocks ads by blocking their source urls)"))
 
         self.setLayout(self._layout)
 
+    def save_config(self):
+        Configurations.general.adblock = self.toggle_adblock_checkbox.isChecked()
+
+
 class ConfigMenu_container(QtWidgets.QTabWidget):
-    def __init__(self):
+    def __init__(self,l):
         super().__init__()
+        self.log = l.getChild("Manager")
         self.general = generalConfigMenu()
         self.setTabBar(TabBar())
         self.setTabPosition(QtWidgets.QTabWidget.West)
 
         self.addTab(self.general,"General")
 
-
+    def save_config(self):
+        self.log.info("Saving and applying configs...")
+        self.general.save_config()
 
 
 class SettingsMenu(QtWidgets.QWidget):
@@ -46,9 +62,18 @@ class SettingsMenu(QtWidgets.QWidget):
         super().__init__()
         self.log = log.getChild("SettingsMenu")
         self._layout = QtWidgets.QVBoxLayout()
+        self._layout.setAlignment(QtCore.Qt.AlignTop)
+
         self.setStyle(ProxyStyle())
-        self.container = ConfigMenu_container()
+
+        self.container = ConfigMenu_container(self.log)
+
         self._layout.addWidget(self.container, stretch=1)
+
+        self.save_config_bar = QtWidgets.QPushButton("Save")
+        self.save_config_bar.clicked.connect(self.container.save_config)
+        self._layout.addWidget(self.save_config_bar,alignment=QtCore.Qt.AlignRight)
+
         self.setLayout(self._layout)
         self.setMinimumSize(100,100)
 

@@ -4,6 +4,7 @@ import urllib
 from PyQt5 import QtWebEngineCore
 from adblockparser import AdblockRules
 
+from PyQtBrowser import configuration
 from PyQtBrowser.logger import logger
 
 url_blacklists = []
@@ -32,7 +33,7 @@ class WebEngineUrlRequestInterceptor(QtWebEngineCore.QWebEngineUrlRequestInterce
     def interceptRequest(self, info:QtWebEngineCore.QWebEngineUrlRequestInfo):
         # print("Intercepted: ",info.requestUrl())
         url = info.requestUrl().toString()
-        if rules.should_block(url):
+        if rules.should_block(url) and configuration.Configurations.general.adblock:
             self.log.info("Blocking url: "+url)
             info.block(True)
         pass
