@@ -1,4 +1,7 @@
 # PythonQtBrowser
+
+![image](https://user-images.githubusercontent.com/34125174/208937208-571d4934-cb2b-455d-879b-f8422ef2aa62.png)
+
 This is a browser made in python with Qt using a PyQt5
 
 run `main.py` to start
